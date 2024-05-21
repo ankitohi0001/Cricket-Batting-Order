@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Batting Order Selector</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #49325c;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+  text-align: center;
+  color: #333;
+}
+
+form {
+  margin-bottom: 20px;
+}
+
+input[type="checkbox"] {
+  margin-right: 5px;
+  transform: scale(1.5);
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 5px;
+  padding: 10px;
+  background-color: #ddd;
+  border-radius: 5px;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Batting Order Selector</h1>
+
+  <form id="playerForm">
+    <input type="checkbox" id="Akshay" name="player" value="Akshay" checked>
+    <label for="Akshay">Akshay</label><br>
+    <input type="checkbox" id="Ankit" name="player" value="Ankit" checked>
+    <label for="Ankit">Ankit</label><br>
+    <input type="checkbox" id="Lalit" name="player" value="Lalit" checked>
+    <label for="Lalit">Lalit</label><br>
+    <input type="checkbox" id="Gaurav" name="player" value="Gaurav" checked>
+    <label for="Gaurav">Gaurav</label><br>
+    <input type="checkbox" id="Vivek" name="player" value="Vivek" checked>
+    <label for="Vivek">Vivek</label><br>
+    <input type="checkbox" id="Chirag" name="player" value="Chirag" checked>
+    <label for="Chirag">Chirag</label><br>
+    <input type="checkbox" id="Mohit" name="player" value="Mohit" checked>
+    <label for="Mohit">Mohit</label><br>
+    <input type="checkbox" id="Sanjay" name="player" value="Sanjay" checked>
+    <label for="Sanjay">Sanjay</label><br>
+    <input type="checkbox" id="Hitesh" name="player" value="Hitesh" checked>
+    <label for="Hitesh">Hitesh</label><br>
+    <input type="checkbox" id="Monu" name="player" value="Monu" checked>
+    <label for="Monu">Monu</label><br>
+    <button type="button" onclick="generateBattingOrder()">Generate Batting Order</button>
+  </form>
+
+  <h2>Batting Order</h2>
+
+  <ul id="battingOrderList"></ul>
+</div>
+
+<script>
+function generateBattingOrder() {
+  // Get all selected players
+  var selectedPlayers = [];
+  var checkboxes = document.getElementsByName("player");
+  checkboxes.forEach(function(checkbox) {
+    if (checkbox.checked) {
+      selectedPlayers.push(checkbox.value);
+    }
+  });
+
+  // Function to shuffle the array randomly
+  function shuffle(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    }
+    return array;
+  }
+
+  // Shuffle the selected players array to get a random batting order
+  var battingOrder = shuffle(selectedPlayers);
+
+  // Display the batting order
+  var battingOrderList = document.getElementById("battingOrderList");
+  battingOrderList.innerHTML = "";
+  battingOrder.forEach(function(player, index) {
+    var listItem = document.createElement("li");
+    listItem.textContent = (index + 1) + ". " + player;
+    battingOrderList.appendChild(listItem);
+  });
+}
+</script>
+
+</body>
+</html>
