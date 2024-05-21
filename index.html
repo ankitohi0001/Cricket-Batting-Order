@@ -1,51 +1,271 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTML to Image with WhatsApp Share</title>
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Batting Order Selector</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #765fa5;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+  text-align: center;
+  color: #333;
+}
+
+form {
+  margin-bottom: 20px;
+}
+
+input[type="checkbox"] {
+  margin-right: 5px;
+  transform: scale(1.5);
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #765fa5;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color:#765fa5;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #765fa5;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.history {
+  margin-top: 30px;
+}
+
+.history h2 {
+  margin-bottom: 10px;
+}
+
+.history ul {
+  padding-left: 20px;
+}
+</style>
 </head>
 <body>
-    <div id="capture" style="padding: 10px; border: 1px solid #d3d3d3;">
-        <h4>Hello world!</h4>
-        <p>This is an example of converting HTML to an image using JavaScript.</p>
+
+<div class="container">
+  <h1>Batting Order Selector</h1>
+
+  <form id="playerForm">
+ <input type="checkbox" id="Akshay" name="player" value="Akshay" checked>
+    <label for="Akshay">Akshay</label><br>
+    <input type="checkbox" id="Ankit" name="player" value="Ankit" checked>
+    <label for="Ankit">Ankit</label><br>
+    <input type="checkbox" id="Lalit" name="player" value="Lalit" checked>
+    <label for="Lalit">Lalit</label><br>
+    <input type="checkbox" id="Gaurav" name="player" value="Gaurav" checked>
+    <label for="Gaurav">Gaurav</label><br>
+    <input type="checkbox" id="Vivek" name="player" value="Vivek" checked>
+    <label for="Vivek">Vivek</label><br>
+    <input type="checkbox" id="Chirag" name="player" value="Chirag" checked>
+    <label for="Chirag">Chirag</label><br>
+    <input type="checkbox" id="Mohit" name="player" value="Mohit" checked>
+    <label for="Mohit">Mohit</label><br>
+    <input type="checkbox" id="Sanjay" name="player" value="Sanjay" checked>
+    <label for="Sanjay">Sanjay</label><br>
+    <input type="checkbox" id="Hitesh" name="player" value="Hitesh" checked>
+    <label for="Hitesh">Hitesh</label><br>
+    <input type="checkbox" id="Monu" name="player" value="Monu" checked>
+    <label for="Monu">Monu</label><br>
+    <button type="button" onclick="addCustomPlayer()">Add Custom Player</button>
+    <div id="customPlayerInput" style="display: none;">
+      <input type="text" id="customPlayerName" placeholder="Enter name">
+      <button type="button" onclick="submitCustomPlayer()">Submit</button>
     </div>
-    <button id="captureBtn">Capture</button>
-    <button id="shareBtn" style="display:none;">Share on WhatsApp</button>
-    <div id="result"></div>
+    <button type="button" onclick="generateBattingOrder()">Generate Batting Order</button>
+  </form>
 
-    <script>
-        let imgUrl;
+  <h2>Batting Order</h2>
+  <ul id="battingOrderList"></ul>
+      <h2> Bowling Orders</h2>
 
-        document.getElementById('captureBtn').addEventListener('click', function() {
-            html2canvas(document.getElementById('capture')).then(function(canvas) {
-                // Append the canvas to the result div
-                document.getElementById('result').innerHTML = ''; // Clear previous results
-                document.getElementById('result').appendChild(canvas);
+ <table id="bowlingOrderTable">
+    <thead>
+      <tr id="bowlingOrderHeader">
+        <th>Batsman</th>
+        <th>Keeper</th>
+      </tr>
+    </thead>
+    <tbody id="bowlingOrderBody"></tbody>
+  </table>
+  <div class="history">
+    <h2>Previous Batting Orders</h2>
+    <ul id="previousOrders"></ul>
+  </div>
 
-                // Convert canvas to image data URL
-                imgUrl = canvas.toDataURL("image/png");
+</div>
 
-                // Create an image element and set its source to the canvas data URL
-                var imageElement = document.createElement("img");
-                imageElement.src = imgUrl;
+<script>
+var customPlayerNames = [];
 
-                // Append the image to the result div (you can replace the canvas with the image if you prefer)
-                document.getElementById('result').appendChild(imageElement);
+function addCustomPlayer() {
+  var customPlayerInput = document.getElementById("customPlayerInput");
+  customPlayerInput.style.display = "block";
+}
 
-                // Show the WhatsApp share button
-                document.getElementById('shareBtn').style.display = 'inline';
-            });
-        });
+function submitCustomPlayer() {
+  var customPlayerName = document.getElementById("customPlayerName").value.trim();
+  if (customPlayerName !== "") {
+    customPlayerNames.push(customPlayerName);
+    document.getElementById("customPlayerName").value = "";
+  }
+}
 
-        document.getElementById('shareBtn').addEventListener('click', function() {
-            // Create WhatsApp share link
-            let whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent('Check out this image: ' + imgUrl)}`;
-            
-            // Open WhatsApp share link in a new window
-            window.open(whatsappUrl, '_blank');
-        });
-    </script>
+function generateBattingOrder() {
+  // Check if there's a previous batting order in local storage
+  var previousBattingOrder = JSON.parse(localStorage.getItem("battingOrder"));
+  if (previousBattingOrder) {
+    var previousOrders = JSON.parse(localStorage.getItem("previousOrders")) || [];
+    previousOrders.push(previousBattingOrder);
+    localStorage.setItem("previousOrders", JSON.stringify(previousOrders));
+  }
+
+  // Get all selected players
+  var selectedPlayers = [];
+  var checkboxes = document.getElementsByName("player");
+  checkboxes.forEach(function(checkbox) {
+    if (checkbox.checked) {
+      selectedPlayers.push(checkbox.value);
+    }
+  });
+
+  // Add custom players
+  selectedPlayers = selectedPlayers.concat(customPlayerNames);
+
+  // Function to shuffle the array randomly
+  function shuffle(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    }
+    return array;
+  }
+
+  // Shuffle the selected players array to get a random batting order
+  var battingOrder = shuffle(selectedPlayers);
+
+  // Display the batting order
+  var battingOrderList = document.getElementById("battingOrderList");
+  battingOrderList.innerHTML = "";
+  battingOrder.forEach(function(player, index) {
+    var listItem = document.createElement("li");
+    listItem.textContent = (index + 1) + ". " + player;
+    battingOrderList.appendChild(listItem);
+  });
+
+  // Store the new batting order in local storage
+  localStorage.setItem("battingOrder", JSON.stringify(battingOrder));
+
+  // Display previous batting orders
+  displayPreviousOrders();
+  generateBowlingOrder();
+}
+
+function displayPreviousOrders() {
+  var previousOrders = JSON.parse(localStorage.getItem("previousOrders")) || [];
+  var previousOrdersList = document.getElementById("previousOrders");
+  previousOrdersList.innerHTML = "";
+  previousOrders.forEach(function(order) {
+    var listItem = document.createElement("li");
+    listItem.textContent = order.join(", ");
+    previousOrdersList.appendChild(listItem);
+  });
+}
+
+function generateBowlingOrder() {
+  var battingOrder = JSON.parse(localStorage.getItem("battingOrder"));
+  if (!battingOrder) {
+    alert("Please generate batting order first.");
+    return;
+  }
+
+  var over = parseInt(prompt("Enter the over for this bowling order (default is 2):"));
+  if (isNaN(over) || over <= 0) {
+    over = 2;
+  }
+
+  var bowlingOrderBody = document.getElementById("bowlingOrderBody");
+  bowlingOrderBody.innerHTML = "";
+
+  // Update the table header based on the number of overs
+  var bowlingOrderHeader = document.getElementById("bowlingOrderHeader");
+  bowlingOrderHeader.innerHTML = "<th>Batsman</th><th>Keeper</th>";
+  for (var i = 1; i <= over; i++) {
+    var th = document.createElement("th");
+    th.textContent = "Bowler " + i;
+    bowlingOrderHeader.appendChild(th);
+  }
+
+  // Generate the bowling order rows
+  for (var i = 0; i < battingOrder.length; i++) {
+    var row = document.createElement("tr");
+
+    var batsman = document.createElement("td");
+    batsman.textContent = battingOrder[i % battingOrder.length];
+    row.appendChild(batsman);
+
+    var keeper = document.createElement("td");
+    keeper.textContent = battingOrder[(i + 1) % battingOrder.length];
+    row.appendChild(keeper);
+
+    for (var j = 1; j <= over; j++) {
+      var bowler = document.createElement("td");
+      bowler.textContent = battingOrder[(i + j + 1) % battingOrder.length];
+      row.appendChild(bowler);
+    }
+
+    bowlingOrderBody.appendChild(row);
+  }
+}
+
+// Initial display of previous orders
+displayPreviousOrders();
+</script>
 </body>
 </html>
