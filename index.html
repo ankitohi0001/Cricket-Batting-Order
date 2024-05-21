@@ -7,11 +7,11 @@
 <style>
 body {
   font-family: Arial, sans-serif;
-  background-color: #49325c;
+  background-color: #765fa5;
 }
 
 .container {
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 20px;
   background-color: #fff;
@@ -35,7 +35,7 @@ input[type="checkbox"] {
 
 button {
   padding: 10px 20px;
-  background-color: #4CAF50;
+  background-color: #765fa5;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -44,7 +44,7 @@ button {
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color:#765fa5;
 }
 
 ul {
@@ -52,23 +52,35 @@ ul {
   padding: 0;
 }
 
-li {
-  margin-bottom: 5px;
-  padding: 10px;
-  background-color: #ddd;
-  border-radius: 5px;
-  animation: fadeIn 0.5s ease;
+table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #765fa5;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.history {
+  margin-top: 30px;
+}
+
+.history h2 {
+  margin-bottom: 10px;
+}
+
+.history ul {
+  padding-left: 20px;
 }
 </style>
 </head>
@@ -84,38 +96,74 @@ li {
     <label for="Ankit">Ankit</label><br>
     <input type="checkbox" id="Lalit" name="player" value="Lalit" checked>
     <label for="Lalit">Lalit</label><br>
-    <input type="checkbox" id="Gaurav" name="player" value="Gaurav" checked>
-    <label for="Gaurav">Gaurav</label><br>
-    <input type="checkbox" id="Vivek" name="player" value="Vivek" checked>
-    <label for="Vivek">Vivek</label><br>
-    <input type="checkbox" id="Chirag" name="player" value="Chirag" checked>
-    <label for="Chirag">Chirag</label><br>
-    <input type="checkbox" id="Mohit" name="player" value="Mohit" checked>
-    <label for="Mohit">Mohit</label><br>
-    <input type="checkbox" id="Sanjay" name="player" value="Sanjay" checked>
-    <label for="Sanjay">Sanjay</label><br>
-    <input type="checkbox" id="Hitesh" name="player" value="Hitesh" checked>
-    <label for="Hitesh">Hitesh</label><br>
-    <input type="checkbox" id="Monu" name="player" value="Monu" checked>
-    <label for="Monu">Monu</label><br>
+    <button type="button" onclick="addCustomPlayer()">Add Custom Player</button>
+    <div id="customPlayerInput" style="display: none;">
+      <input type="text" id="customPlayerName" placeholder="Enter name">
+      <button type="button" onclick="submitCustomPlayer()">Submit</button>
+    </div>
     <button type="button" onclick="generateBattingOrder()">Generate Batting Order</button>
   </form>
 
   <h2>Batting Order</h2>
-
+  
   <ul id="battingOrderList"></ul>
+
+  <div class="history">
+    <h2>Previous Batting Orders</h2>
+    <ul id="previousOrders"></ul>
+  </div>
+  <table id="bowlingOrderTable">
+    <thead>
+      <tr>
+        <th>Batsman</th>
+        <th>Keeper</th>
+        <th>Bowler 1</th>
+        <th>Bowler 2</th>
+      </tr>
+    </thead>
+    <tbody id="bowlingOrderBody"></tbody>
+  </table>
+
 </div>
 
 <script>
+var customPlayerNames = [];
+var selectedPlayers = [];
+
+function addCustomPlayer() {
+  var customPlayerInput = document.getElementById("customPlayerInput");
+  customPlayerInput.style.display = "block";
+}
+
+function submitCustomPlayer() {
+  var customPlayerName = document.getElementById("customPlayerName").value.trim();
+  if (customPlayerName !== "") {
+    customPlayerNames.push(customPlayerName);
+    document.getElementById("customPlayerName").value = "";
+  }
+}
+
 function generateBattingOrder() {
+  // Check if there's a previous batting order in local storage
+  var previousBattingOrder = localStorage.getItem("battingOrder");
+  if (previousBattingOrder) {
+    var confirmNewOrder = confirm("Are you sure you want to generate a new batting order? The previous one will be overwritten.");
+    if (!confirmNewOrder) {
+      return; // If user cancels, exit the function
+    }
+  }
+
   // Get all selected players
-  var selectedPlayers = [];
+  
   var checkboxes = document.getElementsByName("player");
   checkboxes.forEach(function(checkbox) {
     if (checkbox.checked) {
       selectedPlayers.push(checkbox.value);
     }
   });
+
+  // Add custom players
+  selectedPlayers = selectedPlayers.concat(customPlayerNames);
 
   // Function to shuffle the array randomly
   function shuffle(array) {
@@ -139,7 +187,69 @@ function generateBattingOrder() {
     listItem.textContent = (index + 1) + ". " + player;
     battingOrderList.appendChild(listItem);
   });
+
+  // Store the batting order in local storage
+  localStorage.setItem("battingOrder", JSON.stringify(battingOrder));
+
+  // Display previous batting orders
+  displayPreviousOrders();
+  generateBowlingOrder();
 }
+
+function displayPreviousOrders() {
+  var previousOrders = JSON.parse(localStorage.getItem("previousOrders")) || [];
+  var previousOrdersList = document.getElementById("previousOrders");
+  previousOrdersList.innerHTML = "";
+  previousOrders.forEach(function(order) {
+    var listItem = document.createElement("li");
+    listItem.textContent = order.join(", ");
+    previousOrdersList.appendChild(listItem);
+  });
+}
+
+function generateBowlingOrder() {
+  var battingOrder = JSON.parse(localStorage.getItem("battingOrder"));
+  if (!battingOrder) {
+    alert("Please generate batting order first.");
+    return;
+  }
+
+  var over = parseInt(prompt("Enter the over for this bowling order:"));
+  if (isNaN(over) || over <= 0) {
+    alert("Please enter a valid over number.");
+    return;
+  }
+
+  var bowlingOrderBody = document.getElementById("bowlingOrderBody");
+  bowlingOrderBody.innerHTML = "";
+  var battingOrderList = document.getElementById("battingOrderList")
+
+ for (var i = 0; i < battingOrder.length; i++) {
+    var row = document.createElement("tr");
+
+    var batsman = document.createElement("td");
+    batsman.textContent = battingOrder[i % battingOrder.length];
+    row.appendChild(batsman);
+
+    var keeper = document.createElement("td");
+    keeper.textContent = battingOrder[(i + 1) % battingOrder.length];
+    row.appendChild(keeper);
+
+    var bowler1 = document.createElement("td");
+    bowler1.textContent = battingOrder[(i + 2) % battingOrder.length];
+    row.appendChild(bowler1);
+
+    var bowler2 = document.createElement("td");
+    bowler2.textContent = battingOrder[(i + 3) % battingOrder.length];
+    row.appendChild(bowler2);
+
+    bowlingOrderBody.appendChild(row);
+}
+
+}
+
+// Initial display of previous orders
+displayPreviousOrders();
 </script>
 
 </body>
