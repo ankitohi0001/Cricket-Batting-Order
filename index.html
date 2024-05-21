@@ -90,7 +90,7 @@ tr:nth-child(even) {
   <h1>Batting Order Selector</h1>
 
   <form id="playerForm">
-    <input type="checkbox" id="Akshay" name="player" value="Akshay" checked>
+ <input type="checkbox" id="Akshay" name="player" value="Akshay" checked>
     <label for="Akshay">Akshay</label><br>
     <input type="checkbox" id="Ankit" name="player" value="Ankit" checked>
     <label for="Ankit">Ankit</label><br>
@@ -119,7 +119,6 @@ tr:nth-child(even) {
   </form>
 
   <h2>Batting Order</h2>
-  
   <ul id="battingOrderList"></ul>
 
   <div class="history">
@@ -128,21 +127,17 @@ tr:nth-child(even) {
   </div>
   <table id="bowlingOrderTable">
     <thead>
-      <tr>
+      <tr id="bowlingOrderHeader">
         <th>Batsman</th>
         <th>Keeper</th>
-        <th>Bowler 1</th>
-        <th>Bowler 2</th>
       </tr>
     </thead>
     <tbody id="bowlingOrderBody"></tbody>
   </table>
-
 </div>
 
 <script>
 var customPlayerNames = [];
-var selectedPlayers = [];
 
 function addCustomPlayer() {
   var customPlayerInput = document.getElementById("customPlayerInput");
@@ -159,16 +154,15 @@ function submitCustomPlayer() {
 
 function generateBattingOrder() {
   // Check if there's a previous batting order in local storage
-  var previousBattingOrder = localStorage.getItem("battingOrder");
+  var previousBattingOrder = JSON.parse(localStorage.getItem("battingOrder"));
   if (previousBattingOrder) {
-    var confirmNewOrder = confirm("Are you sure you want to generate a new batting order? The previous one will be overwritten.");
-    if (!confirmNewOrder) {
-      return; // If user cancels, exit the function
-    }
+    var previousOrders = JSON.parse(localStorage.getItem("previousOrders")) || [];
+    previousOrders.push(previousBattingOrder);
+    localStorage.setItem("previousOrders", JSON.stringify(previousOrders));
   }
 
   // Get all selected players
-  
+  var selectedPlayers = [];
   var checkboxes = document.getElementsByName("player");
   checkboxes.forEach(function(checkbox) {
     if (checkbox.checked) {
@@ -202,7 +196,7 @@ function generateBattingOrder() {
     battingOrderList.appendChild(listItem);
   });
 
-  // Store the batting order in local storage
+  // Store the new batting order in local storage
   localStorage.setItem("battingOrder", JSON.stringify(battingOrder));
 
   // Display previous batting orders
@@ -227,11 +221,26 @@ function generateBowlingOrder() {
     alert("Please generate batting order first.");
     return;
   }
+
+  var over = parseInt(prompt("Enter the over for this bowling order (default is 2):"));
+  if (isNaN(over) || over <= 0) {
+    over = 2;
+  }
+
   var bowlingOrderBody = document.getElementById("bowlingOrderBody");
   bowlingOrderBody.innerHTML = "";
-  var battingOrderList = document.getElementById("battingOrderList")
 
- for (var i = 0; i < battingOrder.length; i++) {
+  // Update the table header based on the number of overs
+  var bowlingOrderHeader = document.getElementById("bowlingOrderHeader");
+  bowlingOrderHeader.innerHTML = "<th>Batsman</th><th>Keeper</th>";
+  for (var i = 1; i <= over; i++) {
+    var th = document.createElement("th");
+    th.textContent = "Bowler " + i;
+    bowlingOrderHeader.appendChild(th);
+  }
+
+  // Generate the bowling order rows
+  for (var i = 0; i < battingOrder.length; i++) {
     var row = document.createElement("tr");
 
     var batsman = document.createElement("td");
@@ -242,22 +251,18 @@ function generateBowlingOrder() {
     keeper.textContent = battingOrder[(i + 1) % battingOrder.length];
     row.appendChild(keeper);
 
-    var bowler1 = document.createElement("td");
-    bowler1.textContent = battingOrder[(i + 2) % battingOrder.length];
-    row.appendChild(bowler1);
-
-    var bowler2 = document.createElement("td");
-    bowler2.textContent = battingOrder[(i + 3) % battingOrder.length];
-    row.appendChild(bowler2);
+    for (var j = 1; j <= over; j++) {
+      var bowler = document.createElement("td");
+      bowler.textContent = battingOrder[(i + j + 1) % battingOrder.length];
+      row.appendChild(bowler);
+    }
 
     bowlingOrderBody.appendChild(row);
-}
-
+  }
 }
 
 // Initial display of previous orders
 displayPreviousOrders();
 </script>
-
 </body>
 </html>
