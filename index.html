@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Batting Order Selector</title>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
 <style>
 body {
   font-family: Arial, sans-serif;
@@ -131,6 +133,10 @@ tr:nth-child(even) {
     </thead>
     <tbody id="bowlingOrderBody"></tbody>
   </table>
+      <button id="captureBtn">Capture</button>
+    <div id="result"></div>
+    <button id="shareBtn" style="display:none;">Share on WhatsApp</button>
+
   <div class="history">
     <h2>Previous Batting Orders</h2>
     <ul id="previousOrders"></ul>
@@ -139,6 +145,7 @@ tr:nth-child(even) {
 </div>
 
 <script>
+ let imgUrl;
 var customPlayerNames = [];
 
 function addCustomPlayer() {
@@ -265,6 +272,29 @@ function generateBowlingOrder() {
 
 // Initial display of previous orders
 displayPreviousOrders();
+
+document.getElementById('captureBtn').addEventListener('click', function() {
+            html2canvas(document.getElementById('bowlingOrderBody')).then(function(canvas) {
+                // Append the canvas to the result div
+                document.getElementById('result').appendChild(canvas);
+
+                // Optionally, create an image element and set its source to the canvas data URL
+                var img = canvas.toDataURL("image/png");
+                var imageElement = document.createElement("img");
+                imageElement.src = img;
+
+                // Append the image to the result div (you can replace the canvas with the image if you prefer)
+                document.getElementById('result').appendChild(imageElement);
+                                document.getElementById('shareBtn').style.display = 'inline';
+   document.getElementById('shareBtn').addEventListener('click', function() {
+            // Create WhatsApp share link
+            let whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent('Check out this image: ' + imgUrl)}`;
+            
+            // Open WhatsApp share link in a new window
+            window.open(whatsappUrl, '_blank');
+        });
+            });
+        });
 </script>
 </body>
 </html>
