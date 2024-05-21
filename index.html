@@ -96,6 +96,20 @@ tr:nth-child(even) {
     <label for="Ankit">Ankit</label><br>
     <input type="checkbox" id="Lalit" name="player" value="Lalit" checked>
     <label for="Lalit">Lalit</label><br>
+    <input type="checkbox" id="Gaurav" name="player" value="Gaurav" checked>
+    <label for="Gaurav">Gaurav</label><br>
+    <input type="checkbox" id="Vivek" name="player" value="Vivek" checked>
+    <label for="Vivek">Vivek</label><br>
+    <input type="checkbox" id="Chirag" name="player" value="Chirag" checked>
+    <label for="Chirag">Chirag</label><br>
+    <input type="checkbox" id="Mohit" name="player" value="Mohit" checked>
+    <label for="Mohit">Mohit</label><br>
+    <input type="checkbox" id="Sanjay" name="player" value="Sanjay" checked>
+    <label for="Sanjay">Sanjay</label><br>
+    <input type="checkbox" id="Hitesh" name="player" value="Hitesh" checked>
+    <label for="Hitesh">Hitesh</label><br>
+    <input type="checkbox" id="Monu" name="player" value="Monu" checked>
+    <label for="Monu">Monu</label><br>
     <button type="button" onclick="addCustomPlayer()">Add Custom Player</button>
     <div id="customPlayerInput" style="display: none;">
       <input type="text" id="customPlayerName" placeholder="Enter name">
@@ -213,13 +227,6 @@ function generateBowlingOrder() {
     alert("Please generate batting order first.");
     return;
   }
-
-  var over = parseInt(prompt("Enter the over for this bowling order:"));
-  if (isNaN(over) || over <= 0) {
-    alert("Please enter a valid over number.");
-    return;
-  }
-
   var bowlingOrderBody = document.getElementById("bowlingOrderBody");
   bowlingOrderBody.innerHTML = "";
   var battingOrderList = document.getElementById("battingOrderList")
